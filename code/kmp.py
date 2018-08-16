@@ -1,4 +1,4 @@
-
+import sys
 
 def brute_force(txt, pat):
     n = len(txt)
@@ -32,21 +32,22 @@ def init_next(pat):
         nxt[j] = border_bf(pat[:j])
     return nxt
 
-def kmp(txt, pat):
+def kmp(txt, pat, nxt=None):
     n = len(txt)
     m = len(pat)
-    nxt = init_next(pat)
+    if not nxt:
+        nxt = init_next(pat)
     occ = []
     #print nxt
     i,j = 0,0
     while i <= n-m:
         while j<m and pat[j]==txt[i+j]:
             j += 1
-        print 
-        print txt
-        print "%s%s%s"%(i*" ", j*"=", "!" if j<m else "")
-        print "%s%s"%(i*" ", pat)
-        print
+        #print 
+        #print txt
+        #print "%s%s%s"%(i*" ", j*"=", "!" if j<m else "")
+        #print "%s%s"%(i*" ", pat)
+        #print
 
         if j == m :
             occ.append(i)
@@ -57,14 +58,18 @@ def kmp(txt, pat):
 
 
 def main():
-    txt = "abracadabra"
-    pat = "abra"
+    inpfile = open(sys.argv[1])
+    pat = sys.argv[2]
 
-
-    occ_bf = brute_force(txt, pat)
-    occ_kmp = kmp(txt, pat)
-    #assert occ_bf == occ_kmp
-    print occ_bf
+    nocc = 0
+    nxt = init_next(pat)
+    for line in inpfile:
+        occ = kmp(line, pat, nxt)
+        if occ:
+            print line
+        nocc += len(occ)
+    inpfile.close()
+    print pat, "occurred", nocc, "times"
 
 
 if __name__ == "__main__":

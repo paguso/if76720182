@@ -25,12 +25,35 @@ def border_bf(s):
     return 0
 
 
-def init_next(pat):
+def init_next_bf(pat):
     m  = len(pat)
     nxt = (m+1) * [-1]
     for j in range(1,m+1):
         nxt[j] = border_bf(pat[:j])
     return nxt
+
+
+def init_next(pat):
+    m = len(pat)
+    nxt = (m+1)*[-1]
+    if m==1 or pat[0]!=pat[1]:
+        nxt[1] = 0
+    i,j = 1,0
+    while  i < m:
+        while i+j < m and pat[i+j]==pat[j] :
+            j += 1
+            if i+j == m or pat[i+j]!=pat[j]:
+                nxt[i+j] = j
+            else:
+                nxt[i+j] = nxt[j]
+        if j==0 and (i==m-1 or pat[0]!=pat[i+1]):
+            nxt[i+1] = 0
+        i += j - nxt[j]
+        j  = max(0, nxt[j])
+    return nxt
+
+
+
 
 def kmp(txt, pat, nxt=None):
     n = len(txt)

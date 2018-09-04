@@ -22,8 +22,21 @@ def border_bf(s):
             return i
     return 0
 
+def init_border(pat):
+    m = len(pat)
+    nxt = (m+1)*[0] 
+    i = 1
+    j = 0
+    while i+j < m:
+        while i+j<m and pat[i+j]==pat[j]:
+            j += 1
+            nxt[i+j] = j
+        i += max(1, (j-nxt[j])) 
+        j = nxt[j]
+    return nxt
+    return [border_bf(s[:j]) for j in range(0,len(s)+1)]
 
-def good_suffix(pat):
+def good_suffix_bf(pat):
     m = len(pat)
     S = (m+1) * [m]
     for j in range(0,m):
@@ -31,7 +44,19 @@ def good_suffix(pat):
             if sim ( pat[j+1:], pat[:k] ):
                 S[j] = m - k
                 break
-    S[-1] = border_bf(pat)   
+    S[-1] = m-border_bf(pat)   
+    return S
+
+
+def good_suffix(pat):
+    m = len(pat)
+    R = init_border(pat[::-1])
+    #print "border", R
+    S = (m+1) * [m-R[m]]
+    for l in range(1, m+1) :
+        j = m - R[l]
+        if S[j] > l - R[l] :
+            S[j] = l - R[l]
     return S
 
 
@@ -58,6 +83,8 @@ def bm(txt, pat, ab, C=None, S=None):
             occ.append(i)
             i += S[-1]
         else:
+            #print "i=",i
+            #print "j=",j,  "S[j]=",S[j], "j-C[]=", j-C[txt[i+j]]
             i += max(S[j], j-C[txt[i+j]])
     return occ
 
@@ -65,9 +92,10 @@ def bm(txt, pat, ab, C=None, S=None):
 
 
 def amain():
-    txt = "abracadabra"
-    pat = "abra"
-    ab  = map(chr, range(32,127)) 
+    txt="  Of his self-love to stop posterity?"  
+    #txt = "abracadabra"
+    pat = "love"
+    ab  = map(chr, range(0,256)) 
     
     occ = bm(txt, pat, ab )
 
@@ -82,11 +110,14 @@ def main():
     nocc = 0
     C = bad_char(pat, ab)
     S = good_suffix(pat)
+    print "good_suffix_bf", good_suffix_bf(pat)
+    print "good_suffix", good_suffix(pat)
     for line in inpfile:
+        #print "good suffix", S
         occ = bm(line, pat, ab, C, S)
-        print line 
-        if occ:
-            print line
+        #print line 
+        #if occ:
+        #    print line
         nocc += len(occ)
     inpfile.close()
     print pat, "occurred", nocc, "times"

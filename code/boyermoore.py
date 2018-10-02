@@ -54,7 +54,7 @@ def good_suffix(pat):
     #print "border", R
     S = (m+1) * [m-R[m]]
     for l in range(1, m+1) :
-        j = m - R[l]
+        j = m - 1 - R[l]
         if S[j] > l - R[l] :
             S[j] = l - R[l]
     return S

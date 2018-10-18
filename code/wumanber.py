@@ -31,11 +31,11 @@ def wu_manber(txt, pat, ab, r, C=None):
     n = len(txt)
     m = len(pat)
     C = C if C else char_mask(pat, ab)
-    S = [BitArray(bin = m*"1") for q in range(r+1)]
+    S = [BitArray(bin = m*"1")<<q for q in range(r+1)]
     occ = []
     for j in range(n):
-        S[0] = (S[0] << 1) | C[txt[j]]
         Sprev = S[0]
+        S[0] = (S[0] << 1) | C[txt[j]]
         for q in range(1,r+1):
             Sprev2 = S[q]
             S[q] = ((S[q]<<1)|C[txt[j]]) & (S[q-1]<<1) & (Sprev<<1) & (Sprev)
@@ -45,17 +45,19 @@ def wu_manber(txt, pat, ab, r, C=None):
     return occ
 
 
-def amain():
-    txt = "abadac"
-    pat = "cada"
-    ab = "abcd"
+def main():
+    txt="If you would like"# further information about World Library, Inc."
+    txt="like"# further information about World Library, Inc."
+    #txt = "abadac"
+    pat = "love"
+    ab = [chr(i) for i in range(128)]
     r = 2
     C = char_mask(pat, ab)
     occ = wu_manber(txt, pat, ab, r, C)
     print occ
 
 
-def main():
+def amain():
     inpfile = open(sys.argv[1])
     pat = sys.argv[2]
     r = int(sys.argv[3])
@@ -67,7 +69,7 @@ def main():
         #print ".",
         occ = wu_manber(line, pat, ab,r, C)
         if occ:
-            print line
+            print line,
         nocc += len(occ)
     inpfile.close()
     print pat, "occurred", nocc, "times"
